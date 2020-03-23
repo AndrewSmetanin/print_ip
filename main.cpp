@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <list>
+#include <tuple>
 
 //<Наглый копипаст>
 template <typename T>
@@ -95,15 +96,20 @@ std::enable_if_t<is_same_v<T, std::string>, T> print(const T &str)
     return str;
 }
 
+template< class T >
+constexpr bool is_floating_point_v = std::is_floating_point<T>::value;
+
 template <class T>
 std::enable_if_t<is_container_v<T> && (!is_same_v<T, std::string>), T> print(const T &container)
 {
-    //Сделать вывод каждого элемента контейнера
     size_t length = container.size();
-    for (auto it = container.begin();it!=container.end();++it)
+    auto it = container.begin();
+    for (size_t i = 0; i<length-1; ++i)
     {
-        print(*it);
+        std::cout<<(*it)<<".";
+        ++it;
     }
+    std::cout<<(*it)<<std::endl;
     return container;
 }
 
@@ -115,16 +121,11 @@ int main(int, char **)
     print(8875824491850138409LL);
 
     std::string s("123.456.789.484");
-    
-    const size_t WIDTH = 4;
-    std::vector<std::string> v = std::vector<std::string>(WIDTH);
-    for (size_t i = 0; i < WIDTH; ++i)
-    {
-        v[i] = "v."+s+".v";
-    }
-
     print(s);
+
+    std::vector<std::string> v = {"192","168","1","1"};
     print(v);
+    
     std::list<unsigned int> list = {2130706433,0b00000000011111111,0xFFFFFFFF,0};
     print(list);
     return 0;
