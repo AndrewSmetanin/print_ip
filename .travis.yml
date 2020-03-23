@@ -23,10 +23,10 @@ deploy:
   script:
   - curl -f -T print_ip-0.0.$TRAVIS_BUILD_NUMBER-Linux.deb -uandrewsmetanin:$BINTRAY_API_KEY "https://api.bintray.com/content/andrewsmetanin/otus-cpp/print_ip/0.0.$TRAVIS_BUILD_NUMBER/print_ip-0.0.$TRAVIS_BUILD_NUMBER.deb;deb_distribution=xenial;deb_component=main;deb_architecture=amd64;publish=1"
 
-deploy:
-  provider: pages
-  skip_cleanup: true
-  local_dir: html
-  github_token: $GH_REPO_TOKEN
-  on:
-    branch: master
+#deploy:
+#  provider: pages
+#  skip_cleanup: true
+#  local_dir: html
+#  github_token: $GH_REPO_TOKEN
+#  on:
+#    branch: master
