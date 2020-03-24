@@ -67,6 +67,55 @@ struct is_container
 };
 //</Наглый копипаст>
 
+
+// <Копипаст с изменениями>
+template <typename T>
+constexpr size_t tuple_size_v = std::tuple_size<T>::value;
+
+template<std::size_t> struct int_{};
+
+template <class Tuple, size_t Pos>
+std::ostream& print_tuple(std::ostream& out, const Tuple& t, int_<Pos> ) {
+  out << std::get< tuple_size_v<Tuple>-Pos >(t) << '.';
+  return print_tuple(out, t, int_<Pos-1>());
+}
+
+template <class Tuple>
+std::ostream& print_tuple(std::ostream& out, const Tuple& t)
+{
+    return print_tuple(out,t,int_<tuple_size_v<Tuple>>{});
+}
+
+
+template <class Tuple>
+std::ostream& print_tuple(std::ostream& out, const Tuple& t, int_<1> ) {
+  return out << std::get<std::tuple_size<Tuple>::value-1>(t) <<std::endl;
+}
+
+//</Копипаст с изменениями>
+
+template <class T, class... Args>
+struct are_all_same;
+
+template <class T>
+struct are_all_same<T>:std::true_type{};
+
+template <class T>
+struct are_all_same<T,T>:std::true_type{};
+
+template <class T, class U>
+struct are_all_same<T,U>:std::false_type{};
+
+template <class T, class... Args>
+struct are_all_same<T,T,Args...>:are_all_same<T,Args...>{};
+
+template <class T, class U, class... Args>
+struct are_all_same<T,U,Args...>:std::false_type{};
+
+
+template <class T, class... Args>
+constexpr bool are_all_same_v = are_all_same<T,Args...>::value;
+
 template <typename T>
 constexpr bool is_container_v = is_container<T>::value;
 
@@ -113,6 +162,13 @@ std::enable_if_t<is_container_v<T> && (!is_same_v<T, std::string>), T> print(con
     return container;
 }
 
+
+template <class T,class... Args>
+std::enable_if_t<is_same_v<T,std::tuple<Args...>>&&are_all_same_v<Args...>,T> print(T tuple_)
+{
+    print_tuple(std::cout,tuple_);
+}
+
 int main(int, char **)
 {
     print(char(-1));
@@ -121,12 +177,20 @@ int main(int, char **)
     print(8875824491850138409LL);
 
     std::string s("123.456.789.484");
-    print(s);
-
-    std::vector<std::string> v = {"192","168","1","1"};
-    print(v);
     
+    const size_t WIDTH = 4;
+    std::vector<std::string> v = {"192","168","0","1"};
+    
+
+    print(s);
+    print(v);
     std::list<unsigned int> list = {2130706433,0b00000000011111111,0xFFFFFFFF,0};
     print(list);
+
+    auto t = std::tuple<int,int,int,int>(1,2,3,4);
+    //print<std::tuple<int,int,int,int>,int,int,int,int>(t);
+    
+    print<std::tuple<int,int,int,int>,int,int,int,int>(t);
+
     return 0;
 }
