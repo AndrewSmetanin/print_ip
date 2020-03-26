@@ -163,10 +163,11 @@ std::enable_if_t<is_container_v<T> && (!is_same_v<T, std::string>), T> print(con
 }
 
 
-template <class T,class... Args>
-std::enable_if_t<is_same_v<T,std::tuple<Args...>>&&are_all_same_v<Args...>,T> print(T tuple_)
+template <class... Args>
+std::enable_if_t<are_all_same_v<Args...>,std::tuple<Args...>> print(std::tuple<Args...> tuple_)
 {
     print_tuple(std::cout,tuple_);
+    return tuple_;
 }
 
 int main(int, char **)
@@ -190,7 +191,7 @@ int main(int, char **)
     auto t = std::tuple<int,int,int,int>(1,2,3,4);
     //print<std::tuple<int,int,int,int>,int,int,int,int>(t);
     
-    print<std::tuple<int,int,int,int>,int,int,int,int>(t);
+    print(t);
 
     return 0;
 }
